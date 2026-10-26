@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -8,7 +9,7 @@ pipeline {
     }
 
     environment {
-        COMPOSE_PROJECT_NAME = 'employee-directory'
+        COMPOSE_PROJECT_NAME = 'employee-directory-search-system'
         FRONTEND_URL = 'http://host.docker.internal:3017'
         BACKEND_URL = 'http://host.docker.internal:8007'
     }
@@ -112,9 +113,12 @@ pipeline {
 
         failure {
             echo 'Pipeline failed. Collecting Docker diagnostics.'
+
             sh '''
-                docker compose ps || true
-                docker compose logs --tail=80 || true
+                docker ps -a
+                docker logs --tail=80 employee-directory-mysql || true
+                docker logs --tail=80 employee-directory-backend || true
+                docker logs --tail=80 employee-directory-frontend || true
             '''
         }
 
